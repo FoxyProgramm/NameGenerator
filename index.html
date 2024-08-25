@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Name Generator</title>
+		<script src="name_presets.js"></script>
+	</head>
+	<body>
+		<h1>Name Generator</h1>
+		<h4>Count: <input type="number" id="count"></h4>
+		<h4>Length: <input type="number" id="length"></h4>
+		<h4>Begin of name: <input type="text" id="bon"></h4>
+		<button onclick="gen()">Generate</button>
+		<div id="settings" style="position:absolute; top: 50px; right:100px; background-color: lightgray;">
+			<h3 align="center">Settings</h3>
+			<button onclick="random_preset()">random</button>
+			<br>
+			<select id="presets"></select>
+			<button onclick="select_preset()">select</button>
+			<button aling="right" onclick="apply_preset()">apply</button>
+			<div id="letters"></div>
+		</div>
+		<div id="output"></div>
+	</body>
+	<script>
+		var qwerty = "qwertyuiopasdfghjklzxcvbnm";
+		let letters = {};
+		let count = 0;
+		let length = 0;
+		let begin_of_name = ""
+		function random_preset() {
+			for (let i = 0;i<qwerty.length;i++){
+				let strip = "";
+				let rand_value = random_range(10, 80);
+				for (let j = 0; j <= rand_value; j++) {
+					strip += qwerty[random_range(0, qwerty.length-1)];
+				}
+				document.getElementById(qwerty[i]).value = strip;
+			}
+			apply_preset();
+		}
+		function random_range(min, max) {
+		  return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min)) + Math.ceil(min));
+		}
+		function print(text) {
+			console.log(text);
+		}
+		function ready(){
+			let output = "";
+			for (let i = 0; i< qwerty.length;i++){
+				output += '<h4 class="letters">' + qwerty[i] + ': <input type="text" class="input_for_letters" id="' + qwerty[i] +'"></h4>';
+			}
+			document.getElementById("letters").innerHTML = output;
+			output = "";
+			for (let i = 0; i < presets.length;i++){
+				output += "<option value='" + presets[i] + "'>" + presets[i] + "</option>"
+			}
+			document.getElementById('presets').innerHTML = output;
+		}
+
+		function init() {
+			count = parseInt(document.getElementById('count').value);
+			length = parseInt(document.getElementById('length').value);
+			begin_of_name = document.getElementById('bon').value;
+		}
+		function gen() {
+			init()
+			let output = "";
+			for (let i = 0;i < count;i++){
+				let name = "";
+				if (begin_of_name == ""){
+					while (true){
+						name = qwerty[random_range(0, qwerty.length)];
+						if (letters[name] != ""){break;}
+					} } else {name = begin_of_name;}
+				let count_of_letters = length - name.length;
+				if (count_of_letters <= 0) {return;}
+				for (let i = 0;i < count_of_letters;i++){
+					let strip = letters[name[name.length-1]];
+					print(strip);
+					name += strip[random_range(0,strip.length)];
+				}
+				output += "<h4>" + name + "</h4>";
+				console.log(name);
+			}
+			document.getElementById('output').innerHTML = output;
+		}
+		function select_preset(){
+			letters = window[document.getElementById('presets').value];
+			for (let i = 0;i<qwerty.length;i++){
+				document.getElementById(qwerty[i]).value = letters[qwerty[i]];
+			}
+		}
+		function apply_preset() {
+			for (let i = 0;i<qwerty.length;i++){
+				letters[qwerty[i]] = document.getElementById(qwerty[i]).value;
+			}
+		}
+		ready();
+	</script>
+	<style>
+		.input_for_letters{
+			width: 450px;
+		}
+	</style>
+</html>
